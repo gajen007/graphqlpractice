@@ -1,0 +1,28 @@
+#Sample getThisBookByID Query
+{
+  getThisBook(bookID:3){
+    id
+    name
+    author {
+      name
+    }
+  }
+}
+
+#Sample getAllBooks Query
+{
+  getAllBooks{
+    id
+    name
+    author {
+      name
+    }
+  }
+}
+
+#Sample AddBook Mutation
+	mutation{
+  		addNewBook(newName:"Kanni Maadam",authorIDofNewBook:4){
+    		id
+  		}
+	}
