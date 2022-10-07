@@ -60,9 +60,42 @@ const schema = new GraphQLSchema({
                 },
                 resolve(parent,args){
                     const newBook={"id":books.length+1,"name":args.newName,"authorID":args.authorIDofNewBook};
-                    books.push(newBook);
+                    books.push(newBook); //regular JS push
                 }
             },
+            editBookNameByID:{
+                type:sampleBook,
+                args:{
+                    targetBookId: { type: GraphQLID },
+                    updatedName: { type: GraphQLString }
+                },
+                resolve(parent,args){
+                    books.forEach(function(book, i) {
+                        if (book.id == args.targetBookId) {
+                            book.name=args.updatedName;
+                        }
+                    });
+                    //regular JS find & replace algorithm
+                }
+            },
+            deleteBookByID:{
+                type:sampleBook,
+                args:{
+                    targetBookId: { type: GraphQLID },
+                },
+                resolve(parent,args){
+                    const index = books.indexOf(books.find((item) => { return item.id == args.targetBookId}));
+                    if (index > -1) { // only splice array when item is found
+                      books.splice(index, 1); // 2nd parameter means remove one item only
+                    }
+                    books.forEach(function(book, i) {
+                        if (book.id == args.targetBookId) {
+                            book.name=args.updatedName;
+                        }
+                    });
+                    //regular JS find & replace algorithm
+                }
+            }
         }
     })
 });
