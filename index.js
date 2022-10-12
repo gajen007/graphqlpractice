@@ -14,7 +14,7 @@ const sampleAuthor = new GraphQLObjectType({
         writtenBooks: {
             type: new GraphQLList(sampleBook),
             resolve(parent, args) { 
-                //return books.filter(item => item.authorID == parent.id);
+                return Book.find({"authorID":parent.id});
             }
         }
     })
@@ -27,8 +27,8 @@ const sampleBook = new GraphQLObjectType({
         name: { type: GraphQLString },
         author: { 
             type: sampleAuthor,
-            resolve(parent, args) { 
-                //return authors.find((item) => { return item.id == parent.authorID});
+            resolve(parent, args) {
+                return Author.findById(parent.authorID);
             }
         }
     })
@@ -41,20 +41,27 @@ const schema = new GraphQLSchema({
             getThisBookByID: {
                 type: sampleBook,
                 args: {  bookID: { type: GraphQLID } },
-                resolve(parent, args) { 
-                    //return books.find((item) => { return item.id == args.bookID});
+                resolve(parent, args) {
+                    return Book.findById(args.bookID);
                 }
             },
-            getAllBooks:{//see no args here
+            getThisAuthorByID: {
+                type: sampleAuthor,
+                args: {  authorID: { type: GraphQLID } },
+                resolve(parent, args) {
+                    return Author.findById(args.authorID);
+                }
+            },
+            getAllBooks:{
                 type: new GraphQLList(sampleBook),
                 resolve(parent, args) { 
-                    //return books;
+                    return Book.find();
                 }
             },
-            getAllAuthors:{//see no args here
+            getAllAuthors:{
                 type: new GraphQLList(sampleAuthor),
                 resolve(parent, args) { 
-                    //return authors;
+                    return Author.find();
                 }
             }
         }
@@ -66,23 +73,31 @@ const schema = new GraphQLSchema({
             addNewAuthor:{
                 type: sampleAuthor,
                 args: {
+                    newAuthorId: { type: GraphQLID },
                     newAuthorName: { type: GraphQLString },
                 },
                 resolve(parent,args){
                     let newAuthor = new Author({
+                        id: args.newAuthorId,
                         name: args.newAuthorName
-                        //See "ID" isn't mentioned bcoz of Mongo!
                     });
                     newAuthor.save();
+                    return newAuthor; //Not Necessary; But for confirm on Screen
                 }
             },
             addNewBook:{
                 type: sampleBook,
                 args: {
-                    newName: { type: GraphQLString },
+                    newBookName: { type: GraphQLString },
                     authorIDofNewBook: { type: GraphQLID }
                 },
-                resolve(parent,args){}
+                resolve(parent,args){
+                    let newBook = new Book({
+                        name: args.newBookName,
+                        authorID: args.authorIDofNewBook
+                    });
+                    newBook.save();
+                }
             },
             editBookNameByID:{
                 type:sampleBook,
@@ -90,14 +105,18 @@ const schema = new GraphQLSchema({
                     targetBookId: { type: GraphQLID },
                     updatedName: { type: GraphQLString }
                 },
-                resolve(parent,args){}
+                resolve(parent,args){
+
+                }
             },
             deleteBookByID:{
                 type:sampleBook,
                 args:{
                     targetBookId: { type: GraphQLID },
                 },
-                resolve(parent,args){}
+                resolve(parent,args){
+
+                }
             }
         }
     })
