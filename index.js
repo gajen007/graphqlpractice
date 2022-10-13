@@ -97,25 +97,49 @@ const schema = new GraphQLSchema({
                         authorID: args.authorIDofNewBook
                     });
                     newBook.save();
+                    return newBook; //Not Necessary; But for confirm on Screen
                 }
             },
             editBookNameByID:{
                 type:sampleBook,
                 args:{
                     targetBookId: { type: GraphQLID },
-                    updatedName: { type: GraphQLString }
+                    updatedBookName: { type: GraphQLString }
                 },
                 resolve(parent,args){
-
+                    return Book.findOneAndUpdate(
+                        { id:args.targetBookId },
+                        { $set:{name:args.updatedBookName}},
+                        { returnOriginal: false },
+                      );
+                }
+            },
+            editAuthorNameByID:{
+                type:sampleAuthor,
+                args:{
+                    targetAuthorId: { type: GraphQLID },
+                    updatedAuthorName: { type: GraphQLString }
+                },
+                resolve(parent,args){
+                    return Author.findOneAndUpdate(
+                        { id:args.targetAuthorId },
+                        { $set:{name:args.updatedAuthorName}},
+                        { returnOriginal: false },
+                      );
                 }
             },
             deleteBookByID:{
                 type:sampleBook,
-                args:{
-                    targetBookId: { type: GraphQLID },
-                },
+                args:{ targetBookId: { type: GraphQLID }, },
                 resolve(parent,args){
-
+                    return Book.findOneAndDelete({ id:args.targetBookId });
+                }
+            },
+            deleteAuthorByID:{
+                type:sampleAuthor,
+                args:{ targetAuthorId: { type: GraphQLID }, },
+                resolve(parent,args){
+                    return Author.findOneAndDelete({ id:args.targetAuthorId });
                 }
             }
         }
